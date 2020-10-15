@@ -18,7 +18,7 @@ import Notice from "~/components/Notice.vue";
 import Product from "~/components/Product.vue";
 import Footer from "~/components/Footer.vue";
 
-import Products from "~/assets/products.ts";
+import { getContentfulProducts, toProduct } from "~/assets/products.ts";
 
 export default Vue.extend({
   components: {
@@ -33,8 +33,9 @@ export default Vue.extend({
     };
   },
   async asyncData({ route }) {
+    const cProds = await getContentfulProducts()
     return {
-      products: Products
+      products: cProds.map(toProduct)
     };
   }
 });

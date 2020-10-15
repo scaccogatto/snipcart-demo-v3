@@ -1,3 +1,5 @@
+import * as contentful from 'contentful'
+
 export interface Product {
   id: string,
   name: string,
@@ -58,5 +60,36 @@ const Products: Product[] = [
     fileGuid: "79b1504d-9127-4e7f-bcdb-dff84a337775"
   },
 ]
+
+const client = contentful.createClient({
+  space: 'ar34yuvr7cd3',
+  accessToken: 'QiLfFxRasUe656jVwRAZA-SSQMJWQYdP2RGRwmhbcc8'
+})
+
+export const getContentfulProducts = async (): Promise<any[]> => {
+  const p = await client.getEntries({
+    content_type: 'product',
+    include: 10
+  })
+
+  return p.items
+}
+
+export const toProduct = (contentfulProduct: contentful.Entry<any>): Product => {
+  return {
+    id: contentfulProduct.fields.id,
+    name: contentfulProduct.fields.name,
+    prices: contentfulProduct.fields.prices.map(toPriceMap).reduce((acc: any, c: any) => Object.assign({}, acc, c), {}),
+    description: contentfulProduct.fields.description,
+    image: contentfulProduct.fields.image.fields.file.url,
+    fileGuid: contentfulProduct.fields.fileGuid,
+  }
+}
+
+const toPriceMap = (price: any) => {
+  return {
+    [price.fields.id]: price.fields.price
+  }
+}
 
 export default Products;
